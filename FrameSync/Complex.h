@@ -17,7 +17,7 @@ typedef struct
 }t_Complex;
 
 t_Complex AddComplex(t_Complex a, t_Complex b);		//加法
-t_Complex SubComplex(t_Complex a, t_Complex b);		//减法
+t_Complex SubComplex(t_Complex a, t_Complex b);		//减法 a - b
 t_Complex MultiComplex(t_Complex a, t_Complex b);	//乘法
 t_Complex ConjComplex(t_Complex a);		//共轭
 COMPLEX_TYPE ModComplex(t_Complex a);	//求模

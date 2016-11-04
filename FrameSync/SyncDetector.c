@@ -468,7 +468,7 @@ static void SyncAutoCorrCenter(INT64 *pGammaDvec)
 	*pGammaDvec = ModComplex(AddTmp);
 }
 
-static void SyncAutoCorr(INT32 *pAutoCorrValue, t_Complex *pCorrValue)
+static void SyncAutoCorr(INT32 *pAutoCorrValue, t_Complex *pCorrValue) //已核对，未验证
 {
 	INT32 TmpRe, TmpIm;
 	INT32 pt1, pt2;
@@ -496,7 +496,7 @@ static void SyncAutoCorr(INT32 *pAutoCorrValue, t_Complex *pCorrValue)
 		TmpRe = (TypeDetCorrValue.Re < 0) ? -1 : 1;
 		TmpIm = (TypeDetCorrValue.Im < 0) ? -1 : 1;
 		*pAutoCorrValue = ModComplex(TypeDetCorrValue);
-		AssignComplex(pCorrValue, TmpRe, TmpIm);
+		AssignComplex(pCorrValue, TmpRe, TmpIm); //检查此处是否能够正确赋值！
 	}
 	else
 	{
@@ -506,7 +506,7 @@ static void SyncAutoCorr(INT32 *pAutoCorrValue, t_Complex *pCorrValue)
 
 }
 
-static void SyncTypeDet()
+static void SyncTypeDet() //已校对，未验证
 {
 	INT32 tk = 0,j,t;
 	INT32 AutoValue = 0;
@@ -551,9 +551,9 @@ static void SyncTypeDet()
 				{
 					AutoCorrFifoFull = 1;
 				}
-				if (AutoCorrFifoFull == 1)
+				if (AutoCorrFifoFull == 1) //此段可优化
 				{
-					AutoCorrMean = 0;
+					AutoCorrMean = 0;  //该变量应该可以改写为局部变量，仅仅只是计算了AutoCorrFifo[4]的平均值而已。
 					for (t = 0; t < 4; t++)
 					{
 						AutoCorrMean += AutoCorrFifo[t];
@@ -583,17 +583,17 @@ static void SyncTypeDet()
 	}
 }
 
-static void SyncHeaderOut()
+static void SyncHeaderOut() //已校对，未验证
 {
 	INT32 k, PtCnt;
-	SyncTypeDet();
+	SyncTypeDet(); //帧头类型检测
+
 	if (SyncFlag == SUPER_FRAME)
 	{
 		memset(pcDataOutBuf, INT32_MAX, 4 * sizeof(t_Complex));
 #ifdef DEBUG
 		printf("找到超帧头\n");
 #endif // DEBUG
-
 	}
 	else if (SyncFlag == SUB_FRAME)
 	{
@@ -601,7 +601,6 @@ static void SyncHeaderOut()
 #ifdef DEBUG
 		printf("找到子帧头\n");
 #endif // DEBUG
-
 	}
 	else
 	{
@@ -612,10 +611,16 @@ static void SyncHeaderOut()
 
 	for (PtCnt = 0; PtCnt < PNSYNC_LEN; PtCnt++)
 	{
-		k = LockPtHold + 1664 + PtCnt;
-		LimitValue(k, 2047);
-
-		pcDataOutBuf[PtCnt + 4] = SpathBuff[k];
+		k = LockPtHold + 1984 + PtCnt;
+		if (k > 4095)	//此段是何意？？？
+		{
+			k -= 4096;
+		}
+		else if (k > 2047)
+		{
+			k -= 2048;
+		}
+		AssignComplex(&(pcDataOutBuf[PtCnt + 4]), SpathBuff[k].Re, SpathBuff[k].Im);
 	}
 
 	if (OutEn == Enable)
@@ -654,7 +659,7 @@ INT32 DataRequest()
 	return DataInLen;
 }
 
-static void Agc2(t_Complex DataIn)
+static void Agc2(t_Complex DataIn)	//已校对、未验证
 {
 	INT32 AvePowerIndex = 0;
 	INT32 CurGain = 0;
@@ -771,13 +776,13 @@ static void Agc2(t_Complex DataIn)
 				break;
 		case 30:
 			CurGain = 814;
-			break;
+				break;
 		case 31:
 			CurGain = 801;
-			break;
+				break;
 		default:
 			CurGain = 789;
-			break;
+				break;
 		}
 		if (Agc2Lock == UNLOCK)
 		{

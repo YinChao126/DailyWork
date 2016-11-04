@@ -124,7 +124,7 @@ INT32 AutoCorrMax;
 INT32 LockPtHold;
 INT32 Agc2Gain;
 INT8 Agc2Lock;
-INT32 PowerIn;
+INT64 PowerIn;
 INT32 DataInLen; //向设备请求的数据量
 INT32 StartPt; //当前的索引起始位置
 INT32 MaxCorrValueSearchRecord;
