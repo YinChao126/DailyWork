@@ -32,6 +32,16 @@ t_Complex ConjComplex(t_Complex a)
 	return c;
 }
 
+COMPLEX_TYPE NormComplex(t_Complex a)
+{
+	return a.Im * a.Im + a.Re * a.Re;
+}
+
+void AssignComplex(t_Complex *DataOut, COMPLEX_TYPE Re, COMPLEX_TYPE Im)
+{
+	DataOut->Re = Re;
+	DataOut->Im = Im;
+}
 #if 0 //如果是通过DSP硬件乘法器实现的，则可直接使用乘法
 COMPLEX_TYPE ModComplex(t_Complex a)
 {
