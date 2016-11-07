@@ -1,4 +1,5 @@
 #include "SyncDetector.h"
+#include "UniversalFifo.h"
 
 void SyncInit()
 {
@@ -50,6 +51,7 @@ void SyncInit()
 	memset(pcDataOutBuf, 0x00, 2048 * sizeof(t_Complex));
 	memset(DataCatch, 0x00, 512 * sizeof(t_Complex));
 	memset(SuperSubSyncHeaderDetFifo, 0x00, 513 * sizeof(t_Complex));
+	memset(OutBuf, 0x00, sizeof(OutBuf));
 
 	Agc2Count = 0;
 	Agc2Gain = AGC2_INI_GAIN;
@@ -275,7 +277,11 @@ void SyncRun(t_Complex *DataIn, struct sLinkPara *RxLinkPara)
 				{
 					if (OutEn == Enable)
 					{
-						//写入数据
+						while (0 != WriteBlockFifo((FIFO_TYPE *)OutBuf, (FIFO_TYPE *)pcDataOutBuf, OFDM_SYM_LEN));
+						{
+							// write failure, delay
+							// error handle!
+						}
 					}
 					OfdmCnt = 0;
 				}
@@ -288,14 +294,18 @@ void SyncRun(t_Complex *DataIn, struct sLinkPara *RxLinkPara)
 				AssignComplex(&(pcDataOutBuf[OfdmCnt]), Agc2Out.Re, Agc2Out.Im);
 				if (OutEn == TRUE)
 				{
-					//写入数据
+					while (0 != WriteBlockFifo((FIFO_TYPE *)OutBuf, (FIFO_TYPE *)pcDataOutBuf, OFDM_SYM_LEN));
+					{
+						// write failure, delay
+						// error handle!
+					}
 				}
 				FsmState = STATE_FRAME_END;
 			}
 			else
 			{
 #ifdef DEBUG
-				printf("Unknow error\n");
+				printf("unknown error\n");
 #endif // DEBUG
 			}
 			DataInLen = 1024;
@@ -625,7 +635,11 @@ static void SyncHeaderOut() //已校对，未验证
 
 	if (OutEn == Enable)
 	{
-		//写数据
+		while (0 != WriteBlockFifo((FIFO_TYPE *)OutBuf, (FIFO_TYPE *)pcDataOutBuf, FRM_HEAD_LEN));
+		{
+			// write failure, delay
+			// error handle!
+		}
 	}
 	CorrCnt = 0;
 	OverPoint = SampleOffset - SampleOffsetRecord;
@@ -646,7 +660,11 @@ static void SyncHeaderOut() //已校对，未验证
 		{
 			if (OutEn == Enable)
 			{
-				//写数据
+				while (0 != WriteBlockFifo((FIFO_TYPE *)OutBuf, (FIFO_TYPE *)pcDataOutBuf, OFDM_SYM_LEN));
+				{
+					// write failure, delay
+					// error handle!
+				}
 			}
 			OfdmCnt = 0;
 		}

@@ -66,6 +66,7 @@ enum
 #define INT32_MAX 2147483647i32
 #define INT32_MIN (-2147483647i32 -1)
 
+#define FRM_HEAD_LEN 1732
 #define MAX_SERVICE_NUM 8
 #define FRAME_HEAD_LEN 1732 //帧头长度
 #define PNSYNC_LEN 1728
@@ -162,4 +163,6 @@ t_Complex SpathBuff[2048]; //数据缓存，此处以后可以用堆来实现
 t_Complex SuperSubSyncHeaderDetFifo[513];
 t_Complex pcDataOutBuf[2048];
 t_Complex DataCatch[512];
+
+t_Complex OutBuf[2050];
 #endif
