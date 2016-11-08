@@ -53,13 +53,13 @@ void SyncInit()
 	memset(SuperSubSyncHeaderDetFifo, 0x00, 513 * sizeof(t_Complex));
 	memset(OutBuf, 0x00, sizeof(OutBuf));
 
+	PowerIn = 0;
 	Agc2Count = 0;
 	Agc2Gain = AGC2_INI_GAIN;
 	Agc2Lock = 0;
 }
 
-
-void SyncRun(t_Complex *DataIn, struct sLinkPara *RxLinkPara)
+void SyncRun(t_Complex *DataIn, struct sLinkPara *RxLinkPara) //已核对，未验证
 {
 	INT32 i,j,k;
 	INT64 EdSync, TmpGammaDvec, TmpGamSvec;
@@ -155,6 +155,7 @@ void SyncRun(t_Complex *DataIn, struct sLinkPara *RxLinkPara)
 					FsmState = STATE_SYNC_FOUND;
 				}
 			}
+			DataIn = 256;
 			break;
 		case STATE_SYNC_FOUND:
 			SampleOffset++;
@@ -177,6 +178,8 @@ void SyncRun(t_Complex *DataIn, struct sLinkPara *RxLinkPara)
 				{
 					DiffPoint = -DiffPoint;
 				}
+				LastPoint = ThisPoint;
+
 				SyncHeaderOut();
 
 				if (DiffPoint < DELAY_CORR_RANGE / 2)
@@ -352,9 +355,7 @@ void SyncRun(t_Complex *DataIn, struct sLinkPara *RxLinkPara)
 	}
 }
 
-
-
-static void SyncAutoCorrDelay(INT64 *pEdSync, INT64 *pGammaDvec)
+static void SyncAutoCorrDelay(INT64 *pEdSync, INT64 *pGammaDvec) //已核对，未验证
 {
 	INT64 ShiftInPower = 0;
 	INT64 ShiftOutPower = 0;
@@ -416,11 +417,11 @@ static void SyncAutoCorrDelay(INT64 *pEdSync, INT64 *pGammaDvec)
 
 	CalcTmp1 = MultiComplex(ConjComplex(FirstCmp), tmp1);
 	CalcTmp2 = MultiComplex(ConjComplex(tmp2), tmp3);
-	MinusResult = SubComplex(CalcTmp1, CalcTmp2);
+	MinusResult = AddComplex(CalcTmp1, CalcTmp2);
 
 	CalcTmp1 = MultiComplex(ConjComplex(tmp4), tmp5);
 	CalcTmp2 = MultiComplex(ConjComplex(tmp5), tmp6);
-	PlusResult = SubComplex(CalcTmp1, CalcTmp2);
+	PlusResult = AddComplex(CalcTmp1, CalcTmp2);
 
 	CorrEdSync = CorrEdSync - ShiftOutPower + ShiftInPower;
 	PdTmpSync = SubComplex(PdTmpSync, MinusResult);
@@ -430,7 +431,7 @@ static void SyncAutoCorrDelay(INT64 *pEdSync, INT64 *pGammaDvec)
 	*pEdSync = CorrEdSync;
 }
 
-static void SyncAutoCorrCenter(INT64 *pGammaDvec)
+static void SyncAutoCorrCenter(INT64 *pGammaDvec) //已核对，未校正
 {
 	t_Complex CenterSymmCorr00, CenterSymmCorr01, TmpCorr, AddTmp;
 	t_Complex tmp1, tmp2, tmp3, tmp4;

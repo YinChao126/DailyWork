@@ -164,5 +164,5 @@ t_Complex SuperSubSyncHeaderDetFifo[513];
 t_Complex pcDataOutBuf[2048];
 t_Complex DataCatch[512];
 
-t_Complex OutBuf[2050];
+t_Complex OutBuf[2050]; //定义的是65536的长度！！！
 #endif
