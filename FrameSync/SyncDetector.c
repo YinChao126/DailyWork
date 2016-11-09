@@ -133,8 +133,8 @@ void SyncRun(t_Complex *DataIn, struct sLinkPara *RxLinkPara) //已核对，未验证
 			}
 			else
 			{
-				CorrCnt++;
 				SyncAutoCorrDelay(&EdSync, &TmpGammaDvec);
+				CorrCnt++;
 			}
 
 			if (BuffFillOneTime)
@@ -155,7 +155,7 @@ void SyncRun(t_Complex *DataIn, struct sLinkPara *RxLinkPara) //已核对，未验证
 					FsmState = STATE_SYNC_FOUND;
 				}
 			}
-			DataIn = 256;
+			DataInLen = 256;
 			break;
 		case STATE_SYNC_FOUND:
 			SampleOffset++;
@@ -249,7 +249,7 @@ void SyncRun(t_Complex *DataIn, struct sLinkPara *RxLinkPara) //已核对，未验证
 					CenterPoint = StartPt;
 					CenterOffset = SampleOffset;
 				}
-				if (SampleOffset = LOCK_SEEK_WINDOWS)
+				if (SampleOffset == LOCK_SEEK_WINDOWS)
 				{
 					if (LockValue < CorrTh)
 					{
@@ -295,7 +295,7 @@ void SyncRun(t_Complex *DataIn, struct sLinkPara *RxLinkPara) //已核对，未验证
 			else if (CorrCnt == DATA_POINT_NUM) //最后一个数据
 			{
 				AssignComplex(&(pcDataOutBuf[OfdmCnt]), Agc2Out.Re, Agc2Out.Im);
-				if (OutEn == TRUE)
+				if (OutEn == Enable)
 				{
 					while (0 != WriteBlockFifo((FIFO_TYPE *)OutBuf, (FIFO_TYPE *)pcDataOutBuf, OFDM_SYM_LEN));
 					{
@@ -312,7 +312,6 @@ void SyncRun(t_Complex *DataIn, struct sLinkPara *RxLinkPara) //已核对，未验证
 #endif // DEBUG
 			}
 			DataInLen = 1024;
-			//写入数据块
 			break;
 		case STATE_FRAME_END:
 			IsLock = FALSE;
@@ -671,7 +670,6 @@ static void SyncHeaderOut() //已校对，未验证
 		}
 	}
 }
-
 
 INT32 DataRequest()
 {
