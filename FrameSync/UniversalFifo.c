@@ -14,7 +14,7 @@ void InitFifo(FIFO_TYPE *Buff, long BuffSize)
 {
 	if (BuffSize > FIFO_MAX_SZIE)
 	{
-		printf("maybe you should change the FIFO_MAX_SZIE bigger!\n");
+		printf("maybe you should give FIFO_MAX_SZIE a bigger value!\n");
 	}
 
 	front = 0;

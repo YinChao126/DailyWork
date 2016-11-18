@@ -9,6 +9,7 @@
 
 /***************************user's area**********************************/
 #define COMPLEX_MODE //开启复数形式
+
 typedef int FIFO_TYPE; //定义FIFO的数据类型（根据实际情况更改）
 #define FIFO_MAX_SZIE 2050 //定义fifo最大容量（需修改），注意，可用数据为MAX-1（1个作为队列状态判断）
 

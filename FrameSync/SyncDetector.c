@@ -1,6 +1,7 @@
 #include "SyncDetector.h"
 #include "UniversalFifo.h"
 
+extern FILE *WriteLog;
 void SyncInit()
 {
 	LossLockCnt = 0;
@@ -213,7 +214,7 @@ void SyncRun(t_Complex *DataIn, struct sLinkPara *RxLinkPara) //已核对，未验证
 					AssignComplex(&SpathBuff[BuffPoint], DataCatch[k].Re, DataCatch[k].Im);
 					SyncAutoCorrDelay(&EdSync, &TmpGammaDvec);
 				}
-				CirFlag = FALSE;
+				CirFlag = 0;
 				LockValue = -1000;
 			}
 			else
@@ -269,6 +270,13 @@ void SyncRun(t_Complex *DataIn, struct sLinkPara *RxLinkPara) //已核对，未验证
 
 					SyncHeaderOut();		//成功完成帧头检测
 					FsmState = STATE_OFDM;  //完成所有同步工作，下一次写入数据
+#if 0
+					fprintf(WriteLog, "NumInFrame = %d\t", NumInFrame);
+					fprintf(WriteLog, "LockPtHold = %d\t", LockPtHold);
+					fprintf(WriteLog, "SampleOffsetRecord = %d\t", SampleOffsetRecord);
+					fprintf(WriteLog, "BuffPoint = %d\t", BuffPoint);
+					fprintf(WriteLog, "ThisPoint = %d\r\n", ThisPoint);
+#endif
 				}
 				DataInLen = 256;
 			}
